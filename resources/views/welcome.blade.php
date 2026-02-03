@@ -80,6 +80,16 @@
                     </button>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <select id="filter_jual" class="form-select">
+                            <option value="">-- Semua Produk --</option>
+                            <option value="jual">Bisa Dijual</option>
+                            <option value="tidak">Tidak Bisa Dijual</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="card">
                     <div class="card-body p-4 p-md-5">
                         <table class="table table-striped table-hover mb-0" id="tbSP">
@@ -277,7 +287,12 @@
             dtProducts = $('#tbSP').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: U.data,
+                ajax: {
+                    url: U.data,
+                    data: function (d) {
+                        d.filter_jual = $('#filter_jual').val();
+                    }
+                },
                 pageLength: 10,
                 order: [
                     [1, 'asc']
@@ -316,6 +331,11 @@
                 `
                     }
                 ]
+            });
+
+            // FILTER CHANGE
+            $('#filter_jual').on('change', function () {
+                dtProducts.ajax.reload();
             });
 
             // OPEN ADD

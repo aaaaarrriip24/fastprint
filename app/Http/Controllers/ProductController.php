@@ -24,12 +24,25 @@ class ProductController extends Controller
         $start  = (int) $req->input('start', 0);
         $length = (int) $req->input('length', 10);
         $search = $req->input('search.value');
-
+        $filterJual = $req->input('filter_jual');
+        
         $query = Product::with([
             'kategori',
             'status'
         ]);
 
+        if ($filterJual === 'jual') {
+            $query->whereHas('status', function ($q) {
+                $q->where('nama_status', 'bisa dijual');
+            });
+        }
+
+        if ($filterJual === 'tidak') {
+            $query->whereHas('status', function ($q) {
+                $q->where('nama_status', '!=', 'bisa dijual');
+            });
+        }
+        
         $recordsTotal = $query->count();
 
         if ($search) {
