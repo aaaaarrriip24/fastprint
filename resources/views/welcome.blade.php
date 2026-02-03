@@ -84,7 +84,7 @@
                     <div class="col-md-3">
                         <select id="filter_jual" class="form-select">
                             <option value="">-- Semua Produk --</option>
-                            <option value="jual">Bisa Dijual</option>
+                            <option value="jual" selected>Bisa Dijual</option>
                             <option value="tidak">Tidak Bisa Dijual</option>
                         </select>
                     </div>
@@ -468,21 +468,45 @@
                 });
             });
 
-            $(document).on('input', '#edit_harga, #add_harga', function () {
-                const val = $(this).val();
+            $(document).on('click', '.btn-del', function () {
+                const id = $(this).data('id');
 
-                if (!/^\d*$/.test(val)) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Harga tidak valid',
-                        text: 'Harga hanya boleh angka',
-                        timer: 1200,
-                        showConfirmButton: false
-                    });
+                Swal.fire({
+                    title: 'Hapus produk?',
+                    text: 'Data yang dihapus tidak bisa dikembalikan',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus',
+                    cancelButtonText: 'Batal'
+                }).then(r => {
+                    if (r.isConfirmed) {
+                        $.ajax({
+                            url: U.del(id),
+                            method: 'DELETE',
+                            success: res => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: res.message ?? 'Produk berhasil dihapus',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
 
-                    $(this).val(val.replace(/\D/g, ''));
-                }
+                                dtProducts.ajax.reload(null, false);
+                            },
+                            error: err => {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: 'Produk gagal dihapus'
+                                });
+                                console.error(err.responseJSON);
+                            }
+                        });
+                    }
+                });
             });
+
 
         });
     </script>
